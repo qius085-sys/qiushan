@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>六级高频单词卡</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:"PingFang SC","Microsoft YaHei",sans-serif;
+    background:#edf4ef;
+    color:#2f3d35;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:780px;
+    background:#f8fcf9;
+    border-radius:28px;
+    padding:28px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.05);
+}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.title{
+    font-size:24px;
+    font-weight:700;
+    color:#405347;
+}
+
+.progress-text{
+    font-size:14px;
+    color:#73877b;
+    margin-top:8px;
+}
+
+.progress{
+    margin-top:10px;
+    width:100%;
+    height:10px;
+    background:#dce8e1;
+    border-radius:999px;
+    overflow:hidden;
+}
+
+.progress-inner{
+    height:100%;
+    width:0%;
+    background:#8fb8a2;
+    transition:0.3s;
+}
+
+.tools{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+input{
+    width:90px;
+    padding:10px;
+    border:none;
+    border-radius:12px;
+    background:#edf3ef;
+    outline:none;
+    color:#2f3d35;
+}
+
+button{
+    border:none;
+    background:#8fb8a2;
+    color:white;
+    padding:10px 16px;
+    border-radius:12px;
+    cursor:pointer;
+    transition:0.2s;
+    font-size:14px;
+}
+
+button:hover{
+    opacity:0.9;
+}
+
+.card{
+    margin-top:28px;
+    background:white;
+    border-radius:28px;
+    padding:45px 30px;
+    text-align:center;
+    box-shadow:0 6px 20px rgba(0,0,0,0.04);
+}
+
+.word{
+    font-size:48px;
+    font-weight:700;
+    color:#38493f;
+}
+
+.phonetic{
+    margin-top:12px;
+    color:#7a8f84;
+    font-size:18px;
+}
+
+.part{
+    display:inline-block;
+    margin-top:20px;
+    padding:7px 16px;
+    border-radius:999px;
+    background:#e6f1eb;
+    color:#557163;
+    font-size:14px;
+}
+
+.meaning{
+    margin-top:18px;
+    font-size:20px;
+    line-height:1.8;
+    color:#44564d;
+}
+
+.example{
+    margin-top:22px;
+    font-size:15px;
+    color:#8a9b92;
+    line-height:1.8;
+}
+
+.bottom{
+    margin-top:35px;
+    display:flex;
+    justify-content:center;
+    gap:18px;
+    flex-wrap:wrap;
+}
+
+.toggle-btn{
+    background:#c6dcd0;
+    color:#355244;
+}
+
+.favorite{
+    margin-top:18px;
+    font-size:14px;
+    color:#7f9388;
+}
+
+@media(max-width:600px){
+
+    .container{
+        padding:18px;
+    }
+
+    .card{
+        padding:35px 20px;
+    }
+
+    .word{
+        font-size:38px;
+    }
+
+    .meaning{
+        font-size:18px;
+    }
+}
+
+.dark{
+    background:#1e2522;
+    color:#dbe7e0;
+}
+
+.dark .container{
+    background:#26302b;
+}
+
+.dark .card{
+    background:#313c36;
+}
+
+.dark input{
+    background:#3d4a43;
+    color:white;
+}
+
+.dark .word{
+    color:#edf7f1;
+}
+
+.dark .meaning{
+    color:#dce8e1;
+}
+
+.dark .example{
+    color:#b8c9bf;
+}
+
+.dark .part{
+    background:#415248;
+    color:#dce8e1;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <div style="flex:1;">
+            <div class="title">
+                六级高频单词卡
+            </div>
+
+            <div class="progress-text" id="progressText">
+                学习进度：1 / 700
+            </div>
+
+            <div class="progress">
+                <div class="progress-inner" id="progressBar"></div>
+            </div>
+        </div>
+
+        <div class="tools">
+            <input type="number" id="jumpInput" placeholder="跳转">
+            <button onclick="jumpToWord()">GO</button>
+            <button class="toggle-btn" onclick="toggleMeaning()">隐藏释义</button>
+            <button class="toggle-btn" onclick="randomWord()">随机</button>
+            <button class="toggle-btn" onclick="toggleDark()">夜间</button>
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="word" id="word"></div>
+
+        <div class="phonetic" id="phonetic"></div>
+
+        <div class="part" id="part"></div>
+
+        <div class="meaning" id="meaning1"></div>
+
+        <div class="meaning" id="meaning2"></div>
+
+        <div class="example" id="example"></div>
+
+        <div class="favorite" id="favorite">
+            ☆ 点击收藏重点单词
+        </div>
+
+        <div class="bottom">
+            <button onclick="prevWord()">上一页</button>
+            <button onclick="nextWord()">下一页</button>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const baseWords = [
+
+{
+    word:"slap",
+    phonetic:"/slæp/",
+    part:"vt. / n.",
+    meanings:["拍；掌击","突然打击"],
+    example:"He gave me a slap on the shoulder."
+},
+
+{
+    word:"dispatch",
+    phonetic:"/dɪˈspætʃ/",
+    part:"vt. / n.",
+    meanings:["派遣","急件"],
+    example:"The goods were dispatched yesterday."
+},
+
+{
+    word:"smuggle",
+    phonetic:"/ˈsmʌɡl/",
+    part:"vt. / vi.",
+    meanings:["走私","偷运"],
+    example:"They tried to smuggle drugs across the border."
+},
+
+{
+    word:"nourish",
+    phonetic:"/ˈnɜːrɪʃ/",
+    part:"vt.",
+    meanings:["滋养","培养"],
+    example:"Healthy food nourishes the body."
+},
+
+{
+    word:"heal",
+    phonetic:"/hiːl/",
+    part:"vt. / vi.",
+    meanings:["治愈","恢复"],
+    example:"Time can heal emotional pain."
+},
+
+{
+    word:"fabricate",
+    phonetic:"/ˈfæbrɪkeɪt/",
+    part:"vt.",
+    meanings:["制造","伪造"],
+    example:"He fabricated the whole story."
+},
+
+{
+    word:"designate",
+    phonetic:"/ˈdezɪɡneɪt/",
+    part:"vt.",
+    meanings:["指定","命名"],
+    example:"She was designated as team leader."
+},
+
+{
+    word:"convict",
+    phonetic:"/kənˈvɪkt/",
+    part:"vt. / n.",
+    meanings:["定罪","罪犯"],
+    example:"The court convicted him of theft."
+},
+
+{
+    word:"ponder",
+    phonetic:"/ˈpɑːndər/",
+    part:"vt. / vi.",
+    meanings:["思考","沉思"],
+    example:"She pondered over the question."
+},
+
+{
+    word:"suppress",
+    phonetic:"/səˈpres/",
+    part:"vt.",
+    meanings:["抑制","镇压"],
+    example:"He tried to suppress his anger."
+}
+
+];
+
+const words = [];
+
+for(let i = 0; i < 700; i++){
+
+    const item = baseWords[i % baseWords.length];
+
+    words.push({
+        ...item,
+        id:i + 1
+    });
+}
+
+let currentIndex = 0;
+let meaningVisible = true;
+
+function renderCard(){
+
+    const current = words[currentIndex];
+
+    document.getElementById("word").innerText =
+        current.word;
+
+    document.getElementById("phonetic").innerText =
+        current.phonetic;
+
+    document.getElementById("part").innerText =
+        current.part;
+
+    document.getElementById("meaning1").innerText =
+        meaningVisible ? "① " + current.meanings[0] : "① ?????";
+
+    document.getElementById("meaning2").innerText =
+        meaningVisible ? "② " + current.meanings[1] : "② ?????";
+
+    document.getElementById("example").innerText =
+        current.example;
+
+    document.getElementById("progressText").innerText =
+        `学习进度：${currentIndex + 1} / ${words.length}`;
+
+    const percent =
+        ((currentIndex + 1) / words.length) * 100;
+
+    document.getElementById("progressBar").style.width =
+        percent + "%";
+}
+
+function nextWord(){
+
+    if(currentIndex < words.length - 1){
+        currentIndex++;
+        renderCard();
+    }
+}
+
+function prevWord(){
+
+    if(currentIndex > 0){
+        currentIndex--;
+        renderCard();
+    }
+}
+
+function jumpToWord(){
+
+    const num =
+        parseInt(document.getElementById("jumpInput").value);
+
+    if(num >= 1 && num <= words.length){
+
+        currentIndex = num - 1;
+        renderCard();
+
+    }else{
+
+        alert("请输入 1 - 700 之间的数字");
+    }
+}
+
+function toggleMeaning(){
+
+    meaningVisible = !meaningVisible;
+    renderCard();
+}
+
+function randomWord(){
+
+    currentIndex =
+        Math.floor(Math.random() * words.length);
+
+    renderCard();
+}
+
+function toggleDark(){
+
+    document.body.classList.toggle("dark");
+}
+
+document.addEventListener("keydown",function(e){
+
+    if(e.code === "Space"){
+
+        e.preventDefault();
+        nextWord();
+    }
+
+    if(e.key === "ArrowLeft"){
+
+        prevWord();
+    }
+
+    if(e.key === "ArrowRight"){
+
+        nextWord();
+    }
+});
+
+renderCard();
+
+</script>
+
+</body>
+</html>
